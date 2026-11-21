@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1425"><title>REMIND ME · اختبار PiP</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;color:#eaf0fa}*{box-sizing:border-box}body{margin:0;background:#0b1425}main{max-width:550px;margin:auto;padding:calc(32px + env(safe-area-inset-top)) 25px 50px}h1{font-size:29px;margin-bottom:10px}p,li{color:#b2bfd0;line-height:1.9;font-size:14px}.tag{font-size:11px;letter-spacing:1px;color:#74b8ff;font-weight:800}video{width:100%;aspect-ratio:16/9;border:1px solid #34445a;border-radius:22px;background:#142238}button,a.btn{appearance:none;display:block;width:100%;text-align:center;background:#2874d0;border:0;border-radius:14px;padding:15px;margin-top:12px;color:#fff;font-size:15px;font-weight:800;text-decoration:none}button:disabled{opacity:.55}a.btn{background:#1d2e48}#state{min-height:45px;border-radius:13px;background:#15243a;padding:13px;line-height:1.8;color:#d7e8fc;font-size:13px}small{color:#8ca2bc}ol{padding-right:22px}
+</style></head><body><main><div class="tag">EXPERIMENT · iPHONE PiP</div><h1>اختبار اللسان العائم</h1><p>هذا اختبار لإمكانية إخراج صورة التذكير في نافذة فيديو عائمة، ودفعها إلى طرف الشاشة مثل YouTube. لا يحتوي على مايك أو كيبورد داخل النافذة.</p>
+<video id="sample" src="/pip-demo.mp4" playsinline controls loop preload="auto" poster="/icons/icon-512.png"></video>
+<button id="start">① تشغيل PiP العائم</button><button id="close" style="background:#263c55">② العودة إلى الصفحة</button>
+<p id="state" role="status">اضغط التشغيل. إذا دعم iPhone النافذة ستظهر؛ جرّب العودة للشاشة الرئيسية وسحبها إلى الحافة.</p>
+<h2>كيف تحكم على النتيجة؟</h2><ol><li>هل ظهرت نافذة صغيرة خارج Safari أو PWA؟</li><li>هل استطعت دفعها إلى طرف الشاشة وإظهارها بالسحب؟</li><li>إذا لم تعمل، جرّب الصفحة من Safari العادي ثم من الأيقونة المثبتة وقارن.</li></ol>
+<p><strong>حد الاختبار:</strong> ظهور نافذة PiP لا يعني أن Apple تسمح لنا بوضع حقل كتابة أو زر مايك مخصص فيها. هذا يتطلب مساراً مختلفاً وغير متاح بحرية في iOS.</p>
+<a class="btn" href="/">الرجوع إلى REMIND ME</a><small>تجربة فنية وليست نسخة من تطبيق أصلي. قد تختلف النتيجة حسب إصدار iOS وإعدادات PiP.</small></main>
+<script>
+const v=document.getElementById('sample'),status=document.getElementById('state');
+const report=m=>status.textContent=m;
+v.addEventListener('webkitpresentationmodechanged',()=>report('وضع الفيديو الآن: '+(v.webkitPresentationMode||'غير معروف')));
+document.getElementById('start').onclick=async()=>{
+ try{
+   v.muted=true;await v.play();
+   if(v.webkitSupportsPresentationMode?.('picture-in-picture')&&typeof v.webkitSetPresentationMode==='function'){
+     v.webkitSetPresentationMode('picture-in-picture');report('طلبنا نافذة PiP. انتقل إلى شاشة iPhone الرئيسية وجرّب إخفاء النافذة عند الحافة.');
+   }else if(document.pictureInPictureEnabled&&v.requestPictureInPicture){
+     await v.requestPictureInPicture();report('دخل الفيديو وضع PiP. جرّب العودة للشاشة الرئيسية.');
+   }else report('المتصفح لا يتيح طلب PiP برمجياً هنا. إذا ظهر زر PiP الأصلي في مشغل الفيديو فجرّبه، وإلا فهذا المسار غير مدعوم في هذا الجهاز.');
+ }catch(e){report('تعذر تشغيل PiP في هذه التجربة: '+(e.message||e.name||'سبب غير معروف')+'. جرّب السماح لـ Picture in Picture من إعدادات iPhone.');}
+};
+document.getElementById('close').onclick=()=>{
+ try{if(v.webkitPresentationMode==='picture-in-picture')v.webkitSetPresentationMode('inline');else if(document.pictureInPictureElement)document.exitPictureInPicture();v.pause();report('عدت إلى وضع العرض داخل الصفحة.')}catch(e){report('قد تحتاج إغلاق نافذة PiP باستخدام تحكم النظام.');}
+};
+</script></body></html>
