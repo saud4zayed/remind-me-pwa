@@ -1,4 +1,4 @@
-name: EdgeProof iOS simulator build
+name: EdgeProof iOS builds
 on:
   push:
     branches: [edge-poc]
@@ -32,4 +32,28 @@ jobs:
         with:
           name: EdgeProof-SIMULATOR-ONLY
           path: EdgeProof-SIMULATOR-ONLY.zip
+          if-no-files-found: error
+      - name: Compile for a real iPhone (unsigned)
+        working-directory: ios-edge-poc
+        run: |
+          set -o pipefail
+          xcodebuild -project EdgeProof.xcodeproj -scheme EdgeProof \
+            -configuration Debug -sdk iphoneos \
+            -destination 'generic/platform=iOS' -derivedDataPath .build-device \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+      - name: Package UNSIGNED iPhone IPA
+        run: |
+          set -euo pipefail
+          APP="ios-edge-poc/.build-device/Build/Products/Debug-iphoneos/EdgeProof.app"
+          test -d "$APP"
+          mkdir -p "ios-edge-poc/.ipa/Payload"
+          cp -R "$APP" ios-edge-poc/.ipa/Payload/
+          cd ios-edge-poc/.ipa
+          zip -qr "$GITHUB_WORKSPACE/EdgeProof-UNSIGNED-iPhone.ipa" Payload
+          unzip -l "$GITHUB_WORKSPACE/EdgeProof-UNSIGNED-iPhone.ipa" | grep -F 'Payload/EdgeProof.app/EdgeProof'
+      - name: Upload unsigned iPhone IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: EdgeProof-UNSIGNED-iPhone-IPA
+          path: EdgeProof-UNSIGNED-iPhone.ipa
           if-no-files-found: error
