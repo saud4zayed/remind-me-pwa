@@ -1,0 +1,19 @@
+name: EdgeProof
+options:
+  bundleIdPrefix: com.saud4zayed.remindme
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+targets:
+  EdgeProof:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [EdgeProof]
+    info:
+      path: EdgeProof/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.saud4zayed.remindme.edgeproof
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: "NO"

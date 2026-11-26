@@ -1,0 +1,35 @@
+name: EdgeProof iOS simulator build
+on:
+  push:
+    branches: [edge-poc]
+    paths:
+      - "ios-edge-poc/**"
+      - ".github/workflows/edge-poc-build.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: xcodebuild -version
+      - run: brew install xcodegen
+      - name: Generate project
+        working-directory: ios-edge-poc
+        run: xcodegen generate
+      - name: Compile unsigned simulator app
+        working-directory: ios-edge-poc
+        run: |
+          set -o pipefail
+          xcodebuild -project EdgeProof.xcodeproj -scheme EdgeProof -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath .build CODE_SIGNING_ALLOWED=NO build
+      - name: Package simulator build
+        run: |
+          cd ios-edge-poc/.build/Build/Products/Debug-iphonesimulator/
+          zip -qr "$GITHUB_WORKSPACE/EdgeProof-SIMULATOR-ONLY.zip" EdgeProof.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EdgeProof-SIMULATOR-ONLY
+          path: EdgeProof-SIMULATOR-ONLY.zip
+          if-no-files-found: error
