@@ -65,7 +65,7 @@ final class TouchPanel: UIView {
     private let heading=UILabel()
     private let bodyLabel=UILabel()
     private let expand=UIButton(type: .system)
-    private let next=UIButton(type: .system)
+    private let nextButton=UIButton(type: .system)
 
     init(label: String, log: @escaping (String)->Void) {
         self.label=label
@@ -79,15 +79,15 @@ final class TouchPanel: UIView {
         bodyLabel.textColor = UIColor(white: 0.88, alpha: 1)
         bodyLabel.numberOfLines=3
         expand.setTitle("⌄ MORE", for: .normal)
-        next.setTitle("● NEXT", for: .normal)
-        for b in [expand, next] {
+        nextButton.setTitle("● NEXT", for: .normal)
+        for b in [expand, nextButton] {
             b.tintColor = .white
             b.backgroundColor=UIColor(red: 0.19, green: 0.34, blue: 0.59, alpha: 1)
             b.layer.cornerRadius=8
         }
         expand.addTarget(self, action: #selector(moreTapped), for: .touchUpInside)
-        next.addTarget(self, action: #selector(nextTapped), for: .touchUpInside)
-        let actions=UIStackView(arrangedSubviews: [expand,next])
+        nextButton.addTarget(self, action: #selector(nextTapped), for: .touchUpInside)
+        let actions=UIStackView(arrangedSubviews: [expand,nextButton])
         actions.axis = .horizontal
         actions.distribution = .fillEqually
         actions.spacing=8
